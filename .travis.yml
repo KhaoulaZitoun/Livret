@@ -1,17 +1,22 @@
 language: php
 
+sudo: false
+
 php:
- - 5.6
+    - 5.5
+    - 5.6
+    - 7.0
+    - 7.1
 
 before_script:
-  - composer install --no-interaction
+    - composer install --ignore-platform-reqs
+    - bin/console doctrine:database:create --env=test
+    - bin/console doctrine:schema:load --env=test
+    - bin/console fixture:load --env=test
 
 script:
-  - ./vendor/bin/phpcs --standard=psr2 ./src
-  - ./vendor/bin/phpmd src/ text codesize,controversial,design,naming,unusedcode
-  - ./vendor/bin/phpunit
+    - vendor/bin/simple-phpunit
 
-# travis should only notify us if the build fails
-notifications:
-  email:
-    on_success: never
+branches:
+  only:
+    - master
